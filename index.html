@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Archive</title>
+<link rel="icon" type="image/png" href="Icon.png">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+  body {
+    background-color: #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    font-family: 'Press Start 2P', monospace;
+  }
+
+  .chat-box {
+    position: relative;
+    width: 500px;
+    height: 600px;
+    background: #111;
+    border: 2px solid orange;
+    box-shadow: 0 0 30px orange;
+    color: white;
+    padding: 20px;
+    overflow-y: auto;
+  }
+
+  .chat-box::before {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: calc(100% - 4px);
+    height: calc(100% - 4px);
+    background: repeating-linear-gradient(
+      rgba(255, 255, 255, 0.04) 0px,
+      rgba(255, 255, 255, 0.04) 2px,
+      transparent 3px,
+      transparent 4px
+    );
+    animation: staticMove 3s linear infinite;
+    z-index: 0;
+  }
+
+  @keyframes staticMove {
+    from { background-position: 0 0; }
+    to { background-position: 0 100%; }
+  }
+
+  .chat-content {
+    position: relative;
+    z-index: 1;
+  }
+
+  .message {
+    margin-bottom: 18px;
+    line-height: 1.6;
+    word-wrap: break-word;
+  }
+
+  .user {
+    color: orange;
+  }
+
+  #end {
+    text-align: center;
+    color: orange;
+    margin-top: 60px;
+    margin-bottom: 10px;
+  }
+
+  .clickable {
+    color: orange;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<div class="chat-box">
+  <div class="chat-content" id="chat"></div>
+</div>
+
+<script>
+const chat = document.getElementById("chat");
+
+const messages = [
+  { speaker: "User", text: "hello?" },
+  { speaker: "System", text: "Accessing archive..." },
+  { speaker: "User", text: "what is this" },
+  { speaker: "System", text: "The Archive." },
+  { speaker: "User", text: "open chatlog 42" },
+  { speaker: "System", text: "Decrypting segments..." },
+  { speaker: "System", text: "<span class='clickable' onclick=\"downloadFile('Puzzle1 (1).png')\">[Click Me]</span>" },
+  { speaker: "User", text: "is this a virus? lol" },
+  { speaker: "System", text: "Chatlog saved." },
+];
+
+async function typeMessage(speaker, text) {
+  const msgEl = document.createElement("div");
+  msgEl.className = "message";
+  const prefix = document.createElement("span");
+  prefix.className = "user";
+  prefix.textContent = speaker + ": ";
+  msgEl.appendChild(prefix);
+  chat.appendChild(msgEl);
+
+  await new Promise(r => setTimeout(r, 400));
+
+  let i = 0;
+  const tempDiv = document.createElement("span");
+  msgEl.appendChild(tempDiv);
+
+  while (i < text.length) {
+    tempDiv.innerHTML = text.slice(0, i + 1);
+    await new Promise(r => setTimeout(r, 40));
+    i++;
+    chat.scrollTop = chat.scrollHeight;
+  }
+}
+
+async function playChat() {
+  for (const msg of messages) {
+    await typeMessage(msg.speaker, msg.text);
+    await new Promise(r => setTimeout(r, 500));
+  }
+  const end = document.createElement("div");
+  end.id = "end";
+  end.textContent = "[End of log]";
+  chat.appendChild(end);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function downloadFile(filename) {
+  const link = document.createElement('a');
+  link.href = filename;
+  link.download = filename;
+  link.click();
+}
+
+playChat();
+</script>
+
+</body>
+</html>
